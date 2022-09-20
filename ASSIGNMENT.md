@@ -2,6 +2,9 @@
 
 - [Getting started](#getting-started)
 - [Requirements](#requirements)
+  - [Program output](#program-output)
+  - [Flags](#flags)
+  - [Fuzzable parameters](#fuzzable-parameters)
 - [Restrictions](#restrictions)
 - [References and tips](#references-and-tips)
 
@@ -151,7 +154,7 @@ Data to send in the body of the HTTP request.
 > -mc (`args.match_codes`)
 
 HTTP status codes that `xfuzz` should filter in. You should only print
-fuzzing parameters for which the HTTP response you get has a status code in
+fuzzed values for which the HTTP response you get has a status code in
 `args.match_codes`.
 
 **Example:** `-mc 200 -mc 302 -mc 403`
