@@ -62,7 +62,7 @@ status code.
 xfuzz will need to be able to understand each of the flags that are displayed.
 Here is a quick overview of each of the flags, as well as how you can access
 them from the `args` variable passed in to `fuzz()`.  Note that the `xfuzz`
-command-line arguments are as close 
+command-line arguments are as close to those of ffuf as possible.
 
 > -u / --url (`args.url`)
 
