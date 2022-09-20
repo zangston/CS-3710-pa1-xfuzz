@@ -3,7 +3,7 @@
 import asyncio
 import uvicorn
 from fastapi import FastAPI
-from test import LIVE_PORT
+from test import getLogger, LIVE_PORT
 
 
 class UvicornTestServer(uvicorn.Server):
@@ -12,7 +12,7 @@ class UvicornTestServer(uvicorn.Server):
         # lets us know that the live server is ready.
         self._startup_done = asyncio.Event()
 
-        print(f"Starting server on {host = !r}, {port = !r}")
+        getLogger().debug("Starting server on host = %s, port = %d", repr(host), port)
 
         config = uvicorn.Config(app, host=host, port=port, log_level="error")
         super().__init__(config=config)
