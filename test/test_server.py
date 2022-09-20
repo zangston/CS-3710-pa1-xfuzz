@@ -26,13 +26,14 @@ async def test_redirect(client):
 
 
 @servertest
-async def test_login(client):
+async def test_login(client, settings):
     # GET request should return Method Not Allowed
     response = await client.get("/auth/login")
     assert response.status_code == 405
 
     # POST request with correct login data should return a 200 response
-    data = {"username": "admin", "password": "password123"}
+    password = settings.auth_router_password()
+    data = {"username": "admin", "password": password}
     response = await client.post("/auth/login", json=data)
     assert response.status_code == 200
     assert response.json() == {"detail": "login succeeded"}

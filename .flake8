@@ -1,3 +1,0 @@
-[flake8]
-extend-ignore = F811
-max-line-length = 120

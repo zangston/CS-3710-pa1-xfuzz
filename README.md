@@ -70,7 +70,7 @@ there are a few things that you _**should not**_ change:
 ### Dependencies
 
 In addition to the above, you shouldn't modify the dependencies for `xfuzz`
-specified in `requirements.txt` and `test.requirements.txt`; these will not get
+specified in `requirements.txt` and `dev.requirements.txt`; these will not get
 installed when we grade your labs.
 
 In general, the only libraries that you should import in your code should either
@@ -104,7 +104,7 @@ You can then download the project and testing dependencies with
 
 ```
 $ source ./venv/bin/activate
-$ pip install -r test.requirements.txt
+$ pip install -r dev.requirements.txt
 ```
 
 ### Running xfuzz
@@ -124,15 +124,15 @@ correctly.
 
 There are two ways that you can test xfuzz: interactively, and with `pytest`. In
 either case, you will want to install the dependencies in
-`test.requirements.txt`, which you can do with
+`dev.requirements.txt`, which you can do with
 
 ```
-$ pip install -r test.requirements.txt
+$ pip install -r dev.requirements.txt
 ```
 
 ### Interactive testing
 
-After installing the dependencies in `test.requirements.txt`, you can run a test
+After installing the dependencies in `dev.requirements.txt`, you can run a test
 server for `xfuzz` locally by running the following command:
 
 ```

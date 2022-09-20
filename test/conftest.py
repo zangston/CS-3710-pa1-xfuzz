@@ -72,12 +72,19 @@ def settings():
     return Settings(openapi_url="")
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="module", autouse=True)
 def hooks():
     return FuzzcheckHooks()
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="function", autouse=True)
+def reset_hooks(hooks):
+    """Fixture to automatically reset the middleware hooks after each test."""
+
+    hooks.reset_hooks()
+
+
+@pytest.fixture(scope="module")
 def app(settings, hooks):
     """Fixture for the test server, as a ``fastapi.FastAPI`` instance."""
 

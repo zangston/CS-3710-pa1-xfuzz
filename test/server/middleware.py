@@ -8,6 +8,9 @@ from starlette.middleware.base import BaseHTTPMiddleware
 
 class FuzzcheckHooks:
     def __init__(self) -> None:
+        self.reset_hooks()
+
+    def reset_hooks(self) -> None:
         self.hooks = dict()
         self.default_hooks = list()
 
