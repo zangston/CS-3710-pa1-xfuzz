@@ -61,7 +61,7 @@ there are a few things that you _**should not**_ change:
   harness](#pytest) expects the command line arguments to work in a certain way,
   and if you veer off it won't be able to score the lab correctly. Note that the
   built-in command line arguments are roughly the same as the arguments to
-  [`ffuf`](https://github.com/ffuf/ffuf).
+  [ffuf](https://github.com/ffuf/ffuf).
 
 - Don't change the location or the function signature of the `fuzz` function in
   `xfuzz/fuzz.py`. This is the function that the test harness will call when it
