@@ -1,4 +1,7 @@
-# Methods for setting up command line argument parsing.
+# Methods for parsing command line arguments
+#
+# NOTE: you do **not** need to modify this file for this assignment! Please read the
+# assignment instructions in ASSIGNMENT.md for more details.
 
 import argparse
 import os
@@ -85,6 +88,7 @@ def setup_argument_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "-e",
         "--extension",
+        dest="extensions",
         action="append",
         help=("One or more extensions to append (e.g. php, html, etc.). Multiple extensions " "may be provided."),
     )
@@ -97,6 +101,7 @@ def setup_argument_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "-H",
         "--header",
+        dest="headers",
         action="append",
         help=(
             'One or more HTTP headers to add to requests, in the form "HeaderName: HeaderValue" '
@@ -104,9 +109,10 @@ def setup_argument_parser() -> argparse.ArgumentParser:
             "specified one or more times."
         ),
     )
-    parser.add_argument("-d", "--data", help="Data to send in the body of the HTTP request.")
+    parser.add_argument("-d", "--data", default=None, help="Data to send in the body of the HTTP request.")
     parser.add_argument(
         "-mc",
+        dest="match_codes",
         type=int,
         action="append",
         help=(
@@ -131,8 +137,8 @@ def parse_args(argv=None) -> argparse.Namespace:
     args = parser.parse_args(args=argv)
 
     # Set defaults for arguments with action="append"
-    args.extensions = [] if args.extension is None else [f".{ext}" for ext in args.extension]
-    args.headers = [] if args.header is None else args.header
-    args.mc = DEFAULT_MATCH_CODES if args.mc is None else args.mc
+    args.extensions = [] if args.extensions is None else [f".{ext}" for ext in args.extensions]
+    args.headers = [] if args.headers is None else args.headers
+    args.match_codes = DEFAULT_MATCH_CODES if args.match_codes is None else args.match_codes
 
     return args
