@@ -1,6 +1,6 @@
 # Tests for the command line interface to xfuzz.
 
-import typing as _t
+import xfuzz._typing as _t
 from .utils import xfuzztest
 from test import LIVE_HOST, LIVE_PORT
 from test.wordlists import path_common

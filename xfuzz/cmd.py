@@ -1,15 +1,17 @@
 # Methods for setting up command line argument parsing.
 
 import argparse
-import typing as _t
 import os
+import xfuzz._typing as _t
 
 # Default list of HTTP response status codes that we should match if the -mc argument
 # is not passed in.
 DEFAULT_MATCH_CODES: _t.Final[_t.List[int]] = [200, 301, 302, 401, 403]
 
 # Program description printed out when the -h / --help flag is given
-DESCRIPTION: _t.Final[str] = """
+DESCRIPTION: _t.Final[
+    str
+] = """
 Simple web fuzzer using aiohttp
 """
 

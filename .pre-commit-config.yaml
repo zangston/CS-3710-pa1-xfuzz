@@ -3,3 +3,9 @@ repos:
     rev: '3.9.2' # https://gitlab.com/pycqa/flake8/-/tags
     hooks:
       - id: flake8
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: 'v0.971' # https://github.com/python/mypy/tags
+    hooks:
+      - id: mypy
+        exclude: test/

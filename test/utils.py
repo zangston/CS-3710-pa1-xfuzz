@@ -1,7 +1,7 @@
 import argparse
 import pytest
 import shlex
-import typing as _t
+import xfuzz._typing as _t
 from dataclasses import dataclass
 from xfuzz import fuzz
 from xfuzz.cmd import parse_args

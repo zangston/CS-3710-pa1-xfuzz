@@ -1,7 +1,7 @@
 # Middleware used by the test harness to ensure that the fuzzer
 # has worked correctly.
 
-import typing as _t
+import xfuzz._typing as _t
 from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
 

@@ -3,7 +3,7 @@
 import random
 import hmac
 import secrets
-import typing as _t
+import xfuzz._typing as _t
 from pydantic import BaseSettings, Field
 from test.wordlists import get_common
 
