@@ -80,9 +80,10 @@ def setup_argument_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "-w",
         "--wordlist",
+        required=True,
         help=(
-            "The wordlist to use (provided as a path to a local file). If not provided, xfuzz will "
-            "read from stdin instead."
+            "The wordlist to use (provided as a path to a local file). If '-' is provided, xfuzz will "
+            "read its wordlist from stdin instead."
         ),
     )
     parser.add_argument(

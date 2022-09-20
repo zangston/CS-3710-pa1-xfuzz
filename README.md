@@ -2,14 +2,16 @@
 
 - [Introduction](#introduction)
 - [Repository layout](#repository-layout)
-- [Installation](#installation)
 - [Testing](#testing)
-- [References and tips](#references-and-tips)
 
 _**NOTE:**_ this is a programming assignment originally designed for CS 3710
 *Intro to Cybersecurity* at the University of Virginia. This assignment covers
 *web fuzzers*, and asks you to build your own fuzzer from the skeleton
 provided here.
+
+See [ASSIGNMENT.md](ASSIGNMENT.md) for the assignment instructions.
+
+See [INSTALL.md](INSTALL.md) for installation instructions.
 
 ## Introduction
 
@@ -50,108 +52,6 @@ I *recommend* that you start implementing xfuzz from the `fuzz()` function in
 arguments from the command line. It is also the function that will get used by
 the PyTest test harness to ensure the correctness of your solution.
 
-### Modifying the source code
-
-In general, you are free to implement `xfuzz` however you see fit. However,
-there are a few things that you _**should not**_ change:
-
-- Don't remove or change any of the command-line arguments specified in
-  `xfuzz/cmd.py`. You can add new ones if you like; however, the [test
-  harness](#pytest) expects the command line arguments to work in a certain way,
-  and if you veer off it won't be able to score the lab correctly. Note that the
-  built-in command line arguments are roughly the same as the arguments to
-  [ffuf](https://github.com/ffuf/ffuf).
-
-- Don't change the location or the function signature of the `fuzz` function in
-  `xfuzz/fuzz.py`. This is the function that the test harness will call when it
-  runs its tests.
-
-### Dependencies
-
-In addition to the above, you shouldn't modify the dependencies for `xfuzz`
-specified in `requirements.txt` and `dev.requirements.txt`; these will not get
-installed when we grade your labs.
-
-In general, the only libraries that you should import in your code should either
-be `aiohttp` or something from the [Python Standard
-Library](https://docs.python.org/3/library/index.html) (note that we will be
-grading your assignments using Python 3.10). If you wish to include
-nicely-formatted / colorized output in your program (*not required*), you may
-also use the [rich
-library](https://rich.readthedocs.io/en/stable/introduction.html), which has
-been included alongside `aiohttp` in the `requirements.txt` file.
-
-## Installation
-
-### Technical requirements
-
-You must have Python version >= 3.7 installed on your system in order to run and
-develop xfuzz. If you don't have Python installed on your system, you can
-download it from [python.org](https://www.python.org/downloads/). You should be
-able to run `xfuzz` on any operating system (but please keep in mind that for
-grading purposes, we will test your code on Linux).
-
-For installing the dependencies, you will also need to have `pip` and `venv`
-installed (or a different package manager, like
-[Anaconda](https://www.anaconda.com/)). You can check if these are installed on
-your system by running
-
-```
-$ python3 -m pip --help
-$ python3 -m venv --help
-```
-
-These should come installed by default if you downloaded Python from
-[python.org](https://www.python.org/). In other cases (e.g. if you're using
-Linux's default Python installation), you may need to install these manually. On
-Debian and Ubuntu, you can run
-
-```
-$ apt-get install -y python3-pip python3-venv
-```
-
-### Download xfuzz and install dependencies
-
-Download this repository with
-
-```bash
-$ git clone https://github.com/kernelmethod/xfuzz
-```
-
-or by downloading the source directly as a `.zip` or `.tar.gz` file. Once you
-have the code, you should create a [virtual
-environment](https://docs.python.org/3/library/venv.html) to install
-the dependencies you'll need for `xfuzz` by calling the following from the
-command line:
-
-```
-$ python3 -m venv ./venv
-```
-
-You can then activate your virtual environment with `source ./venv/bin/activate`
-(MacOS / Linux) or `venv\Scripts\activate` (Windows). You can now install the
-development dependencies for this project in the virtual environment with
-
-```
-$ python3 -m pip install -r dev.requirements.txt
-```
-
-If you don't like using `pip`, you can try using a different package manager
-like [Anaconda](https://www.anaconda.com/) to install these dependencies.
-
-### Running xfuzz
-
-To run `xfuzz` on your machine, run the following in your terminal:
-
-```
-$ python3 -m xfuzz --help
-```
-
-This will display the default command line arguments available for `xfuzz`, as
-well as some examples of how it should be used. Note that you will need to
-implement these parts of `xfuzz` first before the example commands will work
-correctly.
-
 ## Testing
 
 There are two ways that you can test xfuzz: interactively, and with `pytest`. In
@@ -188,6 +88,9 @@ $ python3 -m xfuzz -u http://localhost:5000/FUZZ
 
 to see all of the pages in the top-level directory of the webserver.
 
+In addition to running the local server, you can try running xfuzz against
+[http://ffuf.me](http://ffuf.me/).
+
 ### PyTest
 
 For grading purposes, we will use PyTest to ensure that `xfuzz` works correctly.
@@ -201,57 +104,3 @@ from your terminal. If all of the tests pass, then you've successfully completed
 the assignment! Note that the test suite we use for grading will be slightly
 different from the one that appears here, so you should be careful and make sure
 that you've implemented everything correctly even after the tests pass.
-
-## References and tips
-
-For this problem you will need to use aiohttp heavily. To accomplish that, you
-may want to use Python's built-in asyncio library as well. You can find the
-documentation for each of these here:
-
-- [aiohttp](https://docs.aiohttp.org/en/stable/index.html)
-  - In particular, you will want to use aiohttp's client-side functionality. The
-    [quickstart](https://docs.aiohttp.org/en/stable/client_quickstart.html)
-    guide is a good place to check if this is your first time using aiohttp.
-- [asyncio](https://docs.python.org/3/library/asyncio.html)
-
-If you've never done asynchronous I/O before (in Python or elsewhere), here's a
-quick overview: whenever you computer does any kind of input/output processing
-(reading a file, performing an HTTP request, etc.), it has to wait a *loooong*
-time (relative to how fast the CPU is going) before it gets back a response.
-
-To speed things up, you perform multiple overlapping I/O operations
-simultaneously, so that you aren't waiting as long for each individual I/O
-operation to finish. For example, here's how we would make three asynchronous
-HTTP requests to `www1.example.com`, `www2.example.com`, and `www3.example.com`
-in Python with aiohttp:
-
-```python
-import aiohttp
-import asyncio
-from asyncio import create_task
-
-async def main():
-  tasks = []
-  async with aiohttp.ClientSession() as sess:
-    tasks.append(create_task(sess.get("http://www1.example.com")))
-    tasks.append(create_task(sess.get("http://www2.example.com")))
-    tasks.append(create_task(sess.get("http://www3.example.com")))
-    responses = await asyncio.gather(*tasks)
-
-if __name__ == "__main__":
-  asyncio.run(main())
-```
-
-Instead of waiting for each of those requests to finish separately, we collected
-them into a list and then waited for all of them to finish at the same time. By
-using async I/O, we were able to perform more HTTP requests in a shorter period
-of time.
-
-If you are not very familiar with asynchronous I/O you shouldn't need to learn
-much for this problem; however, it can take some getting used to the rules of
-the `async` / `await` keywords. Here are some additional good discussions on the
-topic that you can look into:
-
-- https://en.wikipedia.org/wiki/Asynchronous_I/O
-- https://realpython.com/async-io-python/
-- https://realpython.com/python-async-features/
