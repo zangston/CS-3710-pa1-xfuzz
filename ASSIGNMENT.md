@@ -18,8 +18,7 @@ by following the [installation instructions](INSTALL.md).
 
 Once xfuzz is set up, you should start implementing it by working on the
 `fuzz()` function defined in [xfuzz/fuzz.py](xfuzz/fuzz.py). This function is
-called right by xfuzz right after we read in and parse the command line
-arguments.
+called by xfuzz right after we read in and parse the command line arguments.
 
 ## Requirements
 
