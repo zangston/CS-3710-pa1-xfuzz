@@ -122,8 +122,8 @@ wordlist.
 > -X / --method (`args.method`)
 
 The HTTP method (GET, POST, etc.) that should be used for requests. Note that
-aiohttp allows you to specify the HTTP method used for a request if you use the
-`ClientSession.request()` function:
+aiohttp allows you to specify the HTTP method for a request as a string using
+the `ClientSession.request()` function:
 
 ```python
 async with aiohttp.ClientSession() as sess:

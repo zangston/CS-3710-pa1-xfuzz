@@ -71,7 +71,7 @@ server for `xfuzz` locally by running the following command:
 $ uvicorn test.interactive:server --host 0.0.0.0 --port 5000
 ```
 
-This will run an HTTP server on `http://localhost:5000`. You can then run (in a
+This will run an HTTP server on http://localhost:5000. You can then run (in a
 different terminal)
 
 ```
@@ -86,7 +86,10 @@ to run
 $ python3 -m xfuzz -u http://localhost:5000/FUZZ
 ```
 
-to see all of the pages in the top-level directory of the webserver.
+to see all of the pages in the top-level directory of the webserver. To see all
+of the routes that are available on the testing server, you can go to
+http://localhost:5000/docs (note that these routes change a little every time
+you start the server).
 
 In addition to running the local server, you can try running xfuzz against
 [http://ffuf.me](http://ffuf.me/).
