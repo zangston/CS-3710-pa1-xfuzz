@@ -91,6 +91,11 @@ to see all of the pages in the top-level directory of the webserver.
 In addition to running the local server, you can try running xfuzz against
 [http://ffuf.me](http://ffuf.me/).
 
+To obtain a wordlist you can use for testing, you can either download a wordlist
+from the [SecLists repository](https://github.com/danielmiessler/SecLists/) (you
+will probably want to use a wordlist in the `Web-Content/` directory), or you
+can use the `common.txt` wordlist in `test/wordlists/common.txt`.
+
 ### PyTest
 
 For grading purposes, we will use PyTest to ensure that `xfuzz` works correctly.
