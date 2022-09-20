@@ -61,13 +61,13 @@ Here is a quick overview of each of the flags, as well as how you can access
 them from the `args` variable passed in to `fuzz()`.  Note that the `xfuzz`
 command-line arguments are as close 
 
-> `-u` / `--url` (`args.url`)
+> -u / --url (`args.url`)
 
 The URL that your fuzzer should target.
 
 **Example:** `-u http://example.org`
 
-> `-w` / `--wordlist` (`args.wordlist`)
+> -w / --wordlist (`args.wordlist`)
 
 The wordlist that your fuzzer should use.  If `-` is provided as the wordlist,
 then you should read data from
@@ -87,7 +87,7 @@ In this example, `xfuzz` should read its wordlist from the output of `seq 1
 - `-w /path/to/wordlist.txt`
 - `-w -`
 
-> `-e` / `--extension` (`args.extensions`)
+> -e / --extension (`args.extensions`)
 
 One or more extensions that should optionally be appended to each value in the
 wordlist. For instance, if your wordlist contains
@@ -117,7 +117,7 @@ wordlist.
 
 **Example:** `-e html -e php`
 
-> `-X` / `--method` (`args.method`)
+> -X / --method (`args.method`)
 
 The HTTP method (GET, POST, etc.) that should be used for requests. Note that
 aiohttp allows you to specify the HTTP method used for a request if you use the
@@ -134,7 +134,7 @@ async with aiohttp.ClientSession() as sess:
 - `-X GET`
 - `-X PUT`
 
-> `-H` / `--header` (`args.headers`)
+> -H / --header (`args.headers`)
 
 One or more [HTTP
 headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers) that should
@@ -142,13 +142,13 @@ be sent in the request
 
 **Example:** `-H 'Content-Type: application/json' -H 'Host: www.example.com'`
 
-> `-d` / `--data` (`args.data`)
+> -d / --data (`args.data`)
 
 Data to send in the body of the HTTP request.
 
 **Example:** `--data '{"username": "admin", "password": "password123"}'`
 
-> `-mc` (`args.match_codes`)
+> -mc (`args.match_codes`)
 
 HTTP status codes that `xfuzz` should filter in. You should only print
 fuzzing parameters for which the HTTP response you get has a status code in
