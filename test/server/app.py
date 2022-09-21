@@ -3,6 +3,7 @@ from fastapi.responses import RedirectResponse
 from test.server import Settings
 from test.server.auth import auth_router_factory
 from test.server.ext import ext_router_factory
+from test.server.vhost import vhost_router_factory
 
 
 def create_app(settings=Settings()):
@@ -11,6 +12,7 @@ def create_app(settings=Settings()):
     app = FastAPI(openapi_url=settings.openapi_url)
     app.include_router(auth_router_factory(settings))
     app.include_router(ext_router_factory(settings))
+    app.include_router(vhost_router_factory(settings))
 
     @app.get("/enum/")
     async def index():

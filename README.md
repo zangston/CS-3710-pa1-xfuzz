@@ -64,8 +64,7 @@ $ pip install -r dev.requirements.txt
 
 ### Interactive testing
 
-After installing the dependencies in `dev.requirements.txt`, you can run a test
-server for `xfuzz` locally by running the following command:
+You can run a test server for `xfuzz` locally with the following command:
 
 ```
 $ uvicorn test.interactive:server --host 0.0.0.0 --port 5000

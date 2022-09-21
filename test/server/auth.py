@@ -12,7 +12,7 @@ class UserLogin(BaseModel):
 
 
 def auth_router_factory(settings: Settings) -> APIRouter:
-    """Factor to create a new ``fastapi.APIRouter`` instance for testing form data and
+    """Factory to create a new ``fastapi.APIRouter`` instance for testing form data and
     authentication."""
 
     router = APIRouter(prefix="/auth", tags=["auth"], responses={404: {"detail": "Not found"}})

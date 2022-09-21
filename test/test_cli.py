@@ -3,7 +3,7 @@
 import xfuzz._typing as _t
 from .utils import xfuzztest
 from test import LIVE_HOST, LIVE_PORT
-from test.wordlists import path_common
+from test.wordlists import path_common, path_subdomains
 
 host: _t.Final[str] = f"http://{LIVE_HOST}:{LIVE_PORT}"
 base_opts: _t.Final[_t.List[str]] = ["-w", str(path_common())]
@@ -101,5 +101,24 @@ async def test_bruteforce_login(settings, fuzz_args, hooks):
 
     assert creds == set([200]), (
         "Login brute force failed: did not get a 200 response for the correct username and password.\n"
+        f"Command: `{fuzz_args.command}`"
+    )
+
+
+@xfuzztest(["-w", str(path_subdomains()), "-u", f"{host}/vhost/", "-H", "Host: FUZZ.example.org"])
+async def test_fuzz_vhost(settings, fuzz_args, hooks):
+    vhosts = set()
+    true_vhost = settings.vhost_router_domain()
+
+    async def check(req, resp):
+        if resp.status_code == 200:
+            vhosts.add(req.headers.get("host"))
+
+    hooks.add_hook("/vhost/", check)
+
+    await fuzz_args.fuzz()
+
+    assert vhosts == set([true_vhost]), (
+        f"Virtual host enumeration failed: expected to find vhost {true_vhost}, found: {vhosts}.\n"
         f"Command: `{fuzz_args.command}`"
     )
