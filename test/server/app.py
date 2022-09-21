@@ -16,7 +16,7 @@ def create_app(settings=Settings()):
 
     @app.get("/enum/")
     async def index():
-        """Homepage address."""
+        """Simple landing page. Returns a 200 OK response."""
         return {"detail": "hello, world!"}
 
     @app.get("/enum/redirect", response_class=RedirectResponse, status_code=307)
