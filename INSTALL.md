@@ -51,6 +51,7 @@ development dependencies for this project in the virtual environment with
 
 ```
 $ python3 -m pip install -r dev.requirements.txt
+$ python3 -m pip install -e .
 ```
 
 If you don't like using `pip`, you can try using a different package manager
