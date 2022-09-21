@@ -12,7 +12,7 @@ def vhost_router_factory(settings: Settings) -> APIRouter:
     """Factory to create a new ``fastapi.Router`` instance for testing header fuzzing."""
 
     prefix = "/vhost"
-    router = APIRouter(prefix=prefix, tags=["vhost"])
+    router = APIRouter(prefix=prefix, tags=["Header fuzzing tests"])
     vhost = settings.vhost_router_domain()
 
     def get_vhost(host: _t.Union[str, None] = Header(default=None)):
