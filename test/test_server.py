@@ -46,18 +46,20 @@ async def test_login(client, settings):
 
 
 @servertest
-async def test_get_user(client):
+async def test_get_user(client, settings):
+    uid = settings.user_uid()
+
     # id parameter is required
-    response = await client.get("/user")
+    response = await client.get("/user/search")
     assert response.status_code == 422
 
     # Make a query for a user that exists
-    response = await client.get("/user?id=1337")
+    response = await client.get(f"/user/search?uid={uid}")
     assert response.status_code == 200
     assert response.json() == {"username": "admin"}
 
     # Make a query for a user that does not exist
-    response = await client.get(f"/user?id={10**10}")
+    response = await client.get(f"/user/search?uid={10**10}")
     assert response.status_code == 404
     assert response.json() == {"detail": "User not found"}
 

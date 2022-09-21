@@ -1,12 +1,22 @@
 # Tests for the command line interface to xfuzz.
 
+import asyncio
 import xfuzz._typing as _t
+import subprocess as sp
 from .utils import xfuzztest
 from test import LIVE_HOST, LIVE_PORT
 from test.wordlists import path_common, path_subdomains
 
+
 host: _t.Final[str] = f"http://{LIVE_HOST}:{LIVE_PORT}"
 base_opts: _t.Final[_t.List[str]] = ["-w", str(path_common())]
+
+
+def fuzz_proc(fuzz_args):
+    """Run ``xfuzz`` in another process."""
+
+    cmd = ["python3", "-m", "xfuzz"] + fuzz_args.args
+    return sp.Popen(cmd, stdin=sp.PIPE)
 
 
 @xfuzztest(base_opts + ["-u", f"{host}/enum/FUZZ", "-mc", "200", "-mc", "307"])
@@ -31,6 +41,34 @@ async def test_directory_enumeration(fuzz_args, hooks):
     assert (
         status_codes.get("/enum/redirect") == 307
     ), f"Fuzzing failed: failed to find /enum/redirect (307)\nCommand: `{fuzz_args.command}`"
+
+
+@xfuzztest(["-w", "-", "-u", f"{host}/user/search?uid=FUZZ"])
+async def test_fuzz_url_parameter_with_stdin_wordlist(settings, fuzz_args, hooks):
+    """Fuzz a URL parameter using inputs passed in to stdin."""
+
+    found_uids = set()
+    expected_uids = set([str(settings.user_uid())])
+
+    async def check(req, resp):
+        if resp.status_code == 200:
+            found_uids.add(req.query_params.get("uid"))
+
+    hooks.add_hook("/user/search", check)
+
+    # Start xfuzz in another process
+    proc = fuzz_proc(fuzz_args)
+
+    wordlist = "\n".join(map(str, range(5000))).encode("utf-8")
+    loop = asyncio.get_event_loop()
+    comm = lambda msg: proc.communicate(input=msg, timeout=30)
+    await loop.run_in_executor(None, comm, wordlist)
+    await loop.run_in_executor(None, proc.wait)
+
+    assert found_uids == expected_uids, (
+        "Fuzzing failed: failed to fuzz user IDs at /user/search. Expected to find: "
+        f"{expected_uids}; found: {found_uids}.\nCommand: `{fuzz_args.command}`"
+    )
 
 
 @xfuzztest(base_opts + ["-u", f"{host}/ext/FUZZ", "-e", "html"])

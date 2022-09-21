@@ -56,3 +56,8 @@ class Settings(BaseSettings):
     def vhost_router_domain(self) -> str:
         subdomain = self.random_word("vhost-router-subdomain", get_subdomains())
         return f"{subdomain}.example.org"
+
+    def user_uid(self) -> int:
+        """Return a random user ID for the user search API simulation."""
+
+        return self.create_token_int("user-uid") % 5000
