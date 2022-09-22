@@ -1,27 +1,26 @@
-import argparse
 import pytest
 import shlex
-import xfuzz._typing as _t
+import typing as _t
 from dataclasses import dataclass
-from xfuzz import fuzz
-from xfuzz.cmd import parse_args
 
 
 @dataclass
 class FuzzArgs:
     args: _t.List[str]
-    parsed_args: argparse.Namespace
 
     def __init__(self, args):
         self.args = args
-        self.parsed_args = parse_args(self.args)
 
-    async def fuzz(self):
-        return await fuzz(self.parsed_args)
+    @property
+    def popen_args(self) -> _t.List[str]:
+        """Return a list of string arguments for ``subprocess.Popen`` so that these arguments
+        can be used to run ``xfuzz`` in another process."""
+
+        return ["python3", "-m", "xfuzz"] + self.args
 
     @property
     def command(self) -> str:
-        return "python3 -m xfuzz " + " ".join(shlex.quote(arg) for arg in self.args)
+        return " ".join(shlex.quote(arg) for arg in self.args)
 
 
 def servertest(func):

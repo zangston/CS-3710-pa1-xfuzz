@@ -14,12 +14,11 @@ base_opts: _t.Final[_t.List[str]] = ["-w", str(path_common())]
 
 
 @asynccontextmanager
-async def fuzz_proc(fuzz_args, timeout: float = 30):
+async def fuzz_proc(fuzz_args, timeout: float = 60):
     """Run ``xfuzz`` in another process and wrap it in an async context. Wait for the process
     to terminate at the end of the context."""
 
-    cmd = ["python3", "-m", "xfuzz"] + fuzz_args.args
-    proc = sp.Popen(cmd, stdin=sp.PIPE)
+    proc = sp.Popen(fuzz_args.popen_args, stdin=sp.PIPE)
     loop = asyncio.get_event_loop()
 
     try:
@@ -49,7 +48,8 @@ async def test_directory_enumeration(fuzz_args, hooks):
 
     hooks.add_hook("/enum/", check_index)
     hooks.add_hook("/enum/redirect", check_redirect)
-    await fuzz_args.fuzz()
+    async with fuzz_proc(fuzz_args):
+        ...
 
     assert (
         status_codes.get("/enum/") == 200
@@ -95,7 +95,8 @@ async def test_get_html_extension(settings, fuzz_args, hooks):
         hit_routes.add((req.url.path, resp.status_code))
 
     hooks.add_hook(f"/ext/{endpoint}.html", check)
-    await fuzz_args.fuzz()
+    async with fuzz_proc(fuzz_args):
+        ...
 
     assert hit_routes == set(
         [(f"/ext/{endpoint}.html", 200)]
@@ -117,7 +118,7 @@ async def test_get_single_extension(settings, fuzz_args, hooks):
             hit_routes.add(req.url.path)
 
     hooks.add_hook(None, check)
-    async with fuzz_proc(fuzz_args, timeout=60):
+    async with fuzz_proc(fuzz_args):
         ...
 
     assert hit_routes == expected_routes, (
@@ -141,7 +142,8 @@ async def test_get_multiple_extensions(settings, fuzz_args, hooks):
 
     hooks.add_hook(html_ep, check)
     hooks.add_hook(php_ep, check)
-    await fuzz_args.fuzz()
+    async with fuzz_proc(fuzz_args):
+        ...
 
     assert hit_routes == set(
         [html_ep, php_ep]
@@ -173,7 +175,8 @@ async def test_bruteforce_login(settings, fuzz_args, hooks):
             creds.add(200)
 
     hooks.add_hook("/auth/login", check)
-    await fuzz_args.fuzz()
+    async with fuzz_proc(fuzz_args):
+        ...
 
     assert creds == set([200]), (
         "Login brute force failed: did not get a 200 response for the correct username and password.\n"
@@ -192,7 +195,8 @@ async def test_fuzz_vhost(settings, fuzz_args, hooks):
 
     hooks.add_hook("/vhost/", check)
 
-    await fuzz_args.fuzz()
+    async with fuzz_proc(fuzz_args):
+        ...
 
     assert vhosts == set([true_vhost]), (
         f"Virtual host enumeration failed: expected to find vhost {true_vhost}, found: {vhosts}.\n"
