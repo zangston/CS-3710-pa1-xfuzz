@@ -21,7 +21,7 @@ def enum_router_factory() -> APIRouter:
         following command:
 
         ```
-        python3 -m xfuzz -w {wordlist} -u $HOST:$PORT{prefix}/FUZZ -mc 307
+        python3 -m xfuzz -w {wordlist} -u $HOST:$PORT{prefix}/FUZZ
         ```
         """
 
@@ -32,7 +32,7 @@ def enum_router_factory() -> APIRouter:
         directory. This route should be identifiable with the following command:
 
         ```
-        python3 -m xfuzz -w {wordlist} -u $HOST:$PORT{prefix}/FUZZ
+        python3 -m xfuzz -w {wordlist} -u $HOST:$PORT{prefix}/FUZZ -mc 307
         ```
         """
 
