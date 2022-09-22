@@ -56,7 +56,7 @@ async def test_get_user(client, settings):
     # Make a query for a user that exists
     response = await client.get(f"/user/search?uid={uid}")
     assert response.status_code == 200
-    assert response.json() == {"username": "admin"}
+    assert response.json() == {"username": "admin", "uid": uid}
 
     # Make a query for a user that does not exist
     response = await client.get(f"/user/search?uid={10**10}")
