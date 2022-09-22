@@ -185,34 +185,27 @@ In general, you are free to implement `xfuzz` however you see fit. However, to
 ensure that your code doesn't break and that we're able to grade your assignment
 correctly, there are a few things that you should not change.
 
-### Command-line arguments
+In particular, **you should avoid modifying the command existing line arguments
+for xfuzz** or their expected behavior (as described above). The [test
+harness](README.md#pytest) expects the program to run in a certain way, and will
+fail if your program does not behave correctly. The command line arguments for
+xfuzz that appear in the output of `python3 -m xfuzz --help` and in the
+[flags](#flags) section above are defined in [`cmd.py`](xfuzz/cmd.py) using
+Python's [argparse](https://docs.python.org/3/library/argparse.html) library.
 
-xfuzz uses the [argparse](https://docs.python.org/3/library/argparse.html)
-library to read and process arguments from the command line. These command line
-arguments are defined in [cmd.py](xfuzz/cmd.py).
+If you wish (and are comfortable using argparse), you may add _new_ command line
+arguments, but keep in mind that these will not be explicitly supplied during
+testing. Otherwise, you should avoid modifying [`cmd.py`](xfuzz/cmd.py).
 
-The [test harness](README.md#pytest) expects the program to run in a certain
-way. In particular, you _should not_ modify any of the existing command-line
-arguments that are provided for `xfuzz` in [cmd.py](xfuzz/cmd.py). If you wish,
-you may add _new_ command line arguments to xfuzz, but keep in mind that the
-test harness will not supply these parameters to xfuzz when it runs.
+Otherwise you are free to do as you wish. In general, you _should not_
+modifying [`__init__.py`](xfuzz/__init__.py),
+[`__main__.py`](xfuzz/__main__.py), or [`_typing.py`](xfuzz/_typing.py), but if
+you know what these files do and are sure your changes won't break any tests you
+may make modifications to them.
 
-### The signature of the fuzz() function
-
-You should start implementing xfuzz by changing the `fuzz` function (defined in
-[xfuzz/fuzz.py](xfuzz/fuzz.py)).  This function takes the command-line arguments
-that are supplied to xfuzz and passes them in through the `args` variable.
-
-This is the function used by the test harness to run your fuzzer implementation.
-You _should not_ change the definition of the `fuzz()` function to take
-different argument types. You also keep `fuzz()` as an `async` function.
-
-### Other files in `xfuzz/`
-
-There are a few other files in `xfuzz/` by default: `__init__.py`,
-`__main__.py`, and `_typing.py`. If you know what these files do you are allowed
-to change them. However, you shouldn't need to modify them for this assignment
-(and things may break if you modify them incorrectly).
+I recommend that you start modifying the code from the `fuzz()` function in
+[`fuzz.py`](xfuzz/fuzz.py), which is the first function called after the command
+line arguments are parsed.
 
 ### Dependencies
 
