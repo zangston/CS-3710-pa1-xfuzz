@@ -12,7 +12,7 @@ from .utils import servertest
 async def test_index(client):
     response = await client.get("/enum/")
     assert response.status_code == 200
-    assert response.json() == {"detail": "hello, world!"}
+    assert response.json() == {"detail": "Enumeration index page"}
 
 
 @servertest

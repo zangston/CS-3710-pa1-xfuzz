@@ -4,6 +4,7 @@ import asyncio
 import xfuzz._typing as _t
 import subprocess as sp
 from .utils import xfuzztest
+from contextlib import asynccontextmanager
 from test import LIVE_HOST, LIVE_PORT
 from test.wordlists import path_common, path_subdomains
 
@@ -12,11 +13,26 @@ host: _t.Final[str] = f"http://{LIVE_HOST}:{LIVE_PORT}"
 base_opts: _t.Final[_t.List[str]] = ["-w", str(path_common())]
 
 
-def fuzz_proc(fuzz_args):
-    """Run ``xfuzz`` in another process."""
+@asynccontextmanager
+async def fuzz_proc(fuzz_args, timeout: float = 30):
+    """Run ``xfuzz`` in another process and wrap it in an async context. Wait for the process
+    to terminate at the end of the context."""
 
     cmd = ["python3", "-m", "xfuzz"] + fuzz_args.args
-    return sp.Popen(cmd, stdin=sp.PIPE)
+    proc = sp.Popen(cmd, stdin=sp.PIPE)
+    loop = asyncio.get_event_loop()
+
+    try:
+        yield proc
+    finally:
+        wait = lambda: proc.wait(timeout=timeout)
+        try:
+            await loop.run_in_executor(None, wait)
+        except sp.TimeoutExpired as ex:
+            assert False, (
+                f"{type(ex).__name__} exception raised after waiting for fuzzer process to terminate.\n"
+                f"Command: `{fuzz_args.command}`"
+            )
 
 
 @xfuzztest(base_opts + ["-u", f"{host}/enum/FUZZ", "-mc", "200", "-mc", "307"])
@@ -57,13 +73,10 @@ async def test_fuzz_url_parameter_with_stdin_wordlist(settings, fuzz_args, hooks
     hooks.add_hook("/user/search", check)
 
     # Start xfuzz in another process
-    proc = fuzz_proc(fuzz_args)
-
-    wordlist = "\n".join(map(str, range(5000))).encode("utf-8")
-    loop = asyncio.get_event_loop()
-    comm = lambda msg: proc.communicate(input=msg, timeout=30)
-    await loop.run_in_executor(None, comm, wordlist)
-    await loop.run_in_executor(None, proc.wait)
+    async with fuzz_proc(fuzz_args, timeout=5) as proc:
+        wordlist = "\n".join(map(str, range(5000))).encode("utf-8")
+        comm = lambda msg: proc.communicate(input=msg, timeout=60)
+        await asyncio.get_event_loop().run_in_executor(None, comm, wordlist)
 
     assert found_uids == expected_uids, (
         "Fuzzing failed: failed to fuzz user IDs at /user/search. Expected to find: "
