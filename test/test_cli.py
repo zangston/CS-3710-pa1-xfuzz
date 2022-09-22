@@ -102,6 +102,31 @@ async def test_get_html_extension(settings, fuzz_args, hooks):
     ), f"Fuzzing failed: did not find /ext/{endpoint}.html.\nCommand: `{fuzz_args.command}`"
 
 
+@xfuzztest(base_opts + ["-u", f"{host}/ext/FUZZ", "-e", "html"])
+async def test_get_single_extension(settings, fuzz_args, hooks):
+    """Test using the -e / --extension flag to indicate a single extension to test."""
+
+    endpoint = settings.ext_router_endpoint()
+    html_ep = f"/ext/{endpoint}.html"
+
+    hit_routes = set()
+    expected_routes = set([html_ep])
+
+    async def check(req, resp):
+        if resp.status_code == 200:
+            hit_routes.add(req.url.path)
+
+    hooks.add_hook(None, check)
+    async with fuzz_proc(fuzz_args, timeout=60):
+        ...
+
+    assert hit_routes == expected_routes, (
+        f"Fuzzing failed: expected to return HTTP 200 responses for {hit_routes}, instead received "
+        f"200 responses for: {hit_routes}.\n"
+        f"Command: `{fuzz_args.command}`"
+    )
+
+
 @xfuzztest(base_opts + ["-u", f"{host}/ext/FUZZ", "-e", "html", "-e", "php"])
 async def test_get_multiple_extensions(settings, fuzz_args, hooks):
     """Test using the -e / --extension flag multiple times."""

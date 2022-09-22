@@ -14,10 +14,9 @@ class FuzzcheckHooks:
         self.hooks = dict()
         self.default_hooks = list()
 
-    def add_hook(self, route: str, hook, default: bool = False) -> None:
-        if not default:
-            hooks = self.hooks.setdefault(route, list())
-            hooks.append(hook)
+    def add_hook(self, route: _t.Optional[str], hook) -> None:
+        if route is not None:
+            self.hooks.setdefault(route, list()).append(hook)
         else:
             self.default_hooks.append(hook)
 
