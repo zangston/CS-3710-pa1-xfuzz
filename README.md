@@ -100,14 +100,15 @@ can use the `common.txt` wordlist in `test/wordlists/common.txt`.
 
 ### PyTest
 
-For grading purposes, we will use PyTest to ensure that `xfuzz` works correctly.
-You can run a series of automated tests for `xfuzz` by simply running
+For grading purposes, we will use PyTest and some manual testing to ensure that
+`xfuzz` works correctly. You can run a series of automated tests for `xfuzz` by
+simply running
 
 ```
 $ pytest
 ```
 
-from your terminal. If all of the tests pass, then you've successfully completed
-the assignment! Note that the test suite we use for grading will be slightly
-different from the one that appears here, so you should be careful and make sure
-that you've implemented everything correctly even after the tests pass.
+from your terminal. These tests are non-comprehensive, and in particular they
+don't check the terminal output of your tool; please make sure that you've
+sufficiently implemented all of the features required for this assignment before
+submitting it.
