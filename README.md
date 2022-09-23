@@ -62,6 +62,10 @@ either case, you will want to install the dependencies in
 $ pip install -r dev.requirements.txt
 ```
 
+The `pytest` method is automated and a bit easier to use, but for ensuring that
+your tool works correctly you should test it against the interactive server as
+described below.
+
 ### Interactive testing
 
 You can run a test server for `xfuzz` locally with the following command:
@@ -82,21 +86,30 @@ For instance, once you've implemented the `fuzz()` function, you should be able
 to run
 
 ```
-$ python3 -m xfuzz -u http://localhost:5000/FUZZ
+$ python3 -m xfuzz -u http://localhost:5000/FUZZ -w test/wordlists/common.txt
 ```
 
-to see all of the pages in the top-level directory of the webserver. To see all
-of the routes that are available on the testing server, you can go to
-http://localhost:5000/docs (note that these routes change a little every time
-you start the server).
+to see all of the pages in the top-level directory of the webserver.
 
-In addition to running the local server, you can try running xfuzz against
-[http://ffuf.me](http://ffuf.me/).
+#### Documentation
+
+To see all of the routes that are available on the testing server, you can go to
+http://localhost:5000/docs after starting up the server (note that these routes
+change a little every time you start the server). This webpage will show you all
+of the routes that are available on the server, as well as a little information
+about the `xfuzz` commands that you should try to run against them.
+
+#### Wordlists
 
 To obtain a wordlist you can use for testing, you can either download a wordlist
 from the [SecLists repository](https://github.com/danielmiessler/SecLists/) (you
 will probably want to use a wordlist in the `Web-Content/` directory), or you
 can use the `common.txt` wordlist in `test/wordlists/common.txt`.
+
+#### Other interactive tests
+
+In addition to running the local server, you can try running xfuzz against
+[http://ffuf.me](http://ffuf.me/).
 
 ### PyTest
 
