@@ -20,7 +20,7 @@ class FuzzArgs:
 
     @property
     def command(self) -> str:
-        return " ".join(shlex.quote(arg) for arg in self.args)
+        return " ".join(shlex.quote(arg) for arg in self.popen_args)
 
 
 def servertest(func):

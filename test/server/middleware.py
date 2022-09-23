@@ -2,8 +2,15 @@
 # has worked correctly.
 
 import xfuzz._typing as _t
+from dataclasses import dataclass
 from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
+
+
+@dataclass
+class RequestData:
+    url: _t.Any
+    json: _t.Dict
 
 
 class FuzzcheckHooks:

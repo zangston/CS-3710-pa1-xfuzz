@@ -46,6 +46,23 @@ async def test_login(client, settings):
 
 
 @servertest
+async def test_user_creation(client):
+    # Requests other than PUT should return Method Not Allowed
+    response = await client.get("/auth/create")
+    assert response.status_code == 405
+
+    # PUT request should return a 200 response for non-extant users
+    data = {"username": "newuser", "password": "password123"}
+    response = await client.put("/auth/create", json=data)
+    assert response.status_code == 200
+
+    # PUT request should return 409 for users that already exist
+    data = {"username": "admin", "password": "password123"}
+    response = await client.put("/auth/create", json=data)
+    assert response.status_code == 409
+
+
+@servertest
 async def test_get_user(client, settings):
     uid = settings.user_uid()
 
