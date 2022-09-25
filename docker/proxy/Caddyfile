@@ -1,0 +1,66 @@
+# The Caddyfile is an easy way to configure your Caddy web server.
+#
+# Unless the file starts with a global options block, the first
+# uncommented line is always the address of your site.
+#
+# To use your own domain name (with automatic HTTPS), first make
+# sure your domain's A/AAAA DNS records are properly pointed to
+# this machine's public IP, then replace ":80" below with your
+# domain name.
+
+{
+    servers {
+        metrics
+    }
+}
+
+(headers) {
+	header {
+		# Disable FLoC tracking
+		Permissions-Policy interest-cohort=()
+
+		# Disable MIME type sniffing
+		X-Content-Type-Options nosniff
+
+		# Clickjacking protection
+		X-Frame-Options DENY
+
+		# Don't include referer information in plaintext requests
+		Referrer-Policy no-referrer-when-downgrade
+
+		# Remove the Server header
+		-Server
+	}
+}
+
+(proxyheaders) {
+	import headers
+
+	header {
+		# Enable caching options if they aren't enabled upstream
+		?Cache-Control max-age=3600
+
+		# Headers for the upstream server
+		header_up Host {upstream_hostport}
+	}
+}
+
+# Default port 80 server
+:80, :443, cs3710.kerneltrick.org {
+	import proxyheaders
+
+	redir / /docs
+	reverse_proxy api.cs3710.lab:5000
+}
+
+metrics.cs3710.kerneltrick.org {
+    reverse_proxy graphs.cs3710.lab:3000
+}
+
+# Enable metrics on port 2018
+:2018 {
+	metrics
+}
+
+# Refer to the Caddy docs for more information:
+# https://caddyserver.com/docs/caddyfile

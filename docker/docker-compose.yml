@@ -1,0 +1,78 @@
+version: "3"
+services:
+
+  proxy:
+    image: cs3710/xfuzz-proxy:latest
+    hostname: proxy.cs3710.lab
+    build:
+      context: ./proxy
+    volumes:
+      - caddy_data:/data:rw
+      - caddy_config:/config:rw
+      - ./proxy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./proxy/html:/var/www/html:ro
+    networks:
+      - metricsnet
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      TC_ENABLE: 0
+    env_file:
+      - proxy/settings.env
+    restart: unless-stopped
+
+  metrics:
+    image: prom/prometheus:latest
+    hostname: metrics.cs3710.lab
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./metrics/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    networks:
+      - metricsnet
+    depends_on:
+      - proxy
+    restart: on-failure
+
+  graphs:
+    image: grafana/grafana-oss:latest
+    hostname: graphs.cs3710.lab
+    networks:
+      - metricsnet
+    volumes:
+      - grafana_storage:/var/lib/grafana:rw
+      - grafana_logs:/var/log/grafana:rw
+      - ./secrets/gf_admin_password:/run/secrets/gf_admin_password:ro
+      - ./metrics/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml:ro
+      - ./metrics/dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml:ro
+      - ./metrics/dashboards/:/opt/dashboards/:ro
+      - ./metrics/grafana_custom.ini:/usr/share/grafana/conf/custom.ini:ro
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD__FILE: /run/secrets/gf_admin_password
+      GF_LOG_MODE: "console file"
+    restart: on-failure
+
+  apiserver:
+    image: cs3710/xfuzz-apiserver:latest
+    build:
+      context: ..
+      dockerfile: docker/apiserver/Dockerfile
+    hostname: api.cs3710.lab
+    networks:
+      - metricsnet
+    volumes:
+      - ../xfuzz:/opt/xfuzz/xfuzz:ro
+      - ../test:/opt/xfuzz/test:ro
+    restart: on-failure
+
+
+networks:
+  xfuzztestnet:
+  metricsnet:
+
+volumes:
+  caddy_data:
+  caddy_config:
+  grafana_storage:
+  grafana_logs:
