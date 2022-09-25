@@ -34,6 +34,32 @@ async def fuzz_proc(fuzz_args, timeout: float = 60):
             )
 
 
+@xfuzztest(["-u", f"{host}"])
+async def test_no_specify_fuzz_parameter(fuzz_args):
+    async with fuzz_proc(fuzz_args) as proc:
+        ...
+
+    assert proc.returncode != 0, (
+        "xfuzz return exit code 0 even though no parameter was specified for fuzzing. Make sure that "
+        "xfuzz returns a non-zero exit code (e.g. by raising an exception) when FUZZ is not provided.\n"
+        f"Command: `{fuzz_args.command}`"
+    )
+
+
+@xfuzztest(base_opts + ["-H", "Content-Type: FUZZ"])
+async def test_no_specify_url(fuzz_args):
+    """We should get an error when a URL is not provided for xfuzz."""
+
+    async with fuzz_proc(fuzz_args) as proc:
+        ...
+
+    assert proc.returncode != 0, (
+        "xfuzz returned exit code 0 even though no URL was provided. Make sure that xfuzz returns "
+        "a non-zero exit code (e.g. by raising an exception) when the -u / --url flag is not provided.\n"
+        f"Command: `{fuzz_args.command}`"
+    )
+
+
 @xfuzztest(base_opts + ["-u", f"{host}/enum/FUZZ", "-mc", "200", "-mc", "307"])
 async def test_directory_enumeration(fuzz_args, hooks):
     """Perform directory enumeration using xfuzz."""
