@@ -1,8 +1,13 @@
 #!/bin/sh
 
+IFACE="eth0"
+
+echo "TC_ENABLE = ${TC_ENABLE}"
+
 # Use tc to simulate latency
 if [ "${TC_ENABLE}" -eq 1 ]; then
-    tc qdisc add dev eth0 root netem delay "${TC_LATENCY}" "${TC_JITTER}"
+    echo "Adding latency and jitter..."
+    tc qdisc add dev "${IFACE}" root netem delay "${TC_LATENCY}" "${TC_JITTER}"
 fi
 
 

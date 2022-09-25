@@ -12,15 +12,20 @@ services:
       - ./proxy/Caddyfile:/etc/caddy/Caddyfile:ro
       - ./proxy/html:/var/www/html:ro
     networks:
-      - metricsnet
+      outnet:
+        priority: 1000
+      xfuzztestnet:
+        priority: 100
     ports:
       - "80:80"
       - "443:443"
     environment:
-      TC_ENABLE: 0
+      TC_ENABLE: 1
     env_file:
       - proxy/settings.env
     restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
 
   metrics:
     image: prom/prometheus:latest
@@ -30,7 +35,7 @@ services:
     volumes:
       - ./metrics/prometheus.yml:/etc/prometheus/prometheus.yml:ro
     networks:
-      - metricsnet
+      - xfuzztestnet
     depends_on:
       - proxy
     restart: on-failure
@@ -39,7 +44,7 @@ services:
     image: grafana/grafana-oss:latest
     hostname: graphs.cs3710.lab
     networks:
-      - metricsnet
+      - xfuzztestnet
     volumes:
       - grafana_storage:/var/lib/grafana:rw
       - grafana_logs:/var/log/grafana:rw
@@ -60,7 +65,7 @@ services:
       dockerfile: docker/apiserver/Dockerfile
     hostname: api.cs3710.lab
     networks:
-      - metricsnet
+      - xfuzztestnet
     volumes:
       - ../xfuzz:/opt/xfuzz/xfuzz:ro
       - ../test:/opt/xfuzz/test:ro
@@ -68,8 +73,13 @@ services:
 
 
 networks:
+  outnet:
   xfuzztestnet:
-  metricsnet:
+#    driver: bridge
+#    ipam:
+#      driver: default
+#      config:
+#        - subnet: 172.30.0.0/16
 
 volumes:
   caddy_data:

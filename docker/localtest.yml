@@ -12,7 +12,7 @@ services:
 
   # Add CAP_NET_ADMIN to the proxy so that it can use tc
   proxy:
-    env:
+    environment:
       TC_ENABLE: 1
     cap_add:
       - NET_ADMIN
