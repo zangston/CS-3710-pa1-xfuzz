@@ -1,0 +1,18 @@
+version: "3"
+services:
+
+  # Add a local xfuzz testing client
+  client:
+    image: cs3710/xfuzz:latest
+    hostname: xfuzz.cs3710.lab
+    build:
+      context: ./client
+    networks:
+      - xfuzztestnet
+
+  # Add CAP_NET_ADMIN to the proxy so that it can use tc
+  proxy:
+    environment:
+      TC_ENABLE: 1
+    cap_add:
+      - NET_ADMIN

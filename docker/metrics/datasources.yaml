@@ -1,0 +1,9 @@
+# Grafana datasources file
+
+apiVersion: 1
+
+datasources:
+  - name: Proxy metrics
+    type: prometheus
+    url: http://metrics.cs3710.lab:9090
+    version: 1

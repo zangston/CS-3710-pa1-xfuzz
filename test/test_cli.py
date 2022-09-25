@@ -34,6 +34,32 @@ async def fuzz_proc(fuzz_args, timeout: float = 60):
             )
 
 
+@xfuzztest(["-u", f"{host}"])
+async def test_no_specify_fuzz_parameter(fuzz_args):
+    async with fuzz_proc(fuzz_args) as proc:
+        ...
+
+    assert proc.returncode != 0, (
+        "xfuzz return exit code 0 even though no parameter was specified for fuzzing. Make sure that "
+        "xfuzz returns a non-zero exit code (e.g. by raising an exception) when FUZZ is not provided.\n"
+        f"Command: `{fuzz_args.command}`"
+    )
+
+
+@xfuzztest(base_opts + ["-H", "Content-Type: FUZZ"])
+async def test_no_specify_url(fuzz_args):
+    """We should get an error when a URL is not provided for xfuzz."""
+
+    async with fuzz_proc(fuzz_args) as proc:
+        ...
+
+    assert proc.returncode != 0, (
+        "xfuzz returned exit code 0 even though no URL was provided. Make sure that xfuzz returns "
+        "a non-zero exit code (e.g. by raising an exception) when the -u / --url flag is not provided.\n"
+        f"Command: `{fuzz_args.command}`"
+    )
+
+
 @xfuzztest(base_opts + ["-u", f"{host}/enum/FUZZ", "-mc", "200", "-mc", "307"])
 async def test_directory_enumeration(fuzz_args, hooks):
     """Perform directory enumeration using xfuzz."""
@@ -48,9 +74,10 @@ async def test_directory_enumeration(fuzz_args, hooks):
 
     hooks.add_hook("/enum/", check_index)
     hooks.add_hook("/enum/redirect", check_redirect)
-    async with fuzz_proc(fuzz_args):
+    async with fuzz_proc(fuzz_args) as proc:
         ...
 
+    assert proc.returncode == 0, f"Fuzzer return non-zero exit code {proc.returncode}\nCommand: `{fuzz_args.command}`"
     assert (
         status_codes.get("/enum/") == 200
     ), f"Fuzzing failed: failed to find /enum/ (200)\nCommand: `{fuzz_args.command}`"
@@ -78,6 +105,7 @@ async def test_fuzz_url_parameter_with_stdin_wordlist(settings, fuzz_args, hooks
         comm = lambda msg: proc.communicate(input=msg, timeout=60)
         await asyncio.get_event_loop().run_in_executor(None, comm, wordlist)
 
+    assert proc.returncode == 0, f"Fuzzer return non-zero exit code {proc.returncode}\nCommand: `{fuzz_args.command}`"
     assert found_uids == expected_uids, (
         "Fuzzing failed: failed to fuzz user IDs at /user/search. Expected to find: "
         f"{expected_uids}; found: {found_uids}.\nCommand: `{fuzz_args.command}`"
@@ -95,9 +123,10 @@ async def test_get_html_extension(settings, fuzz_args, hooks):
         hit_routes.add((req.url.path, resp.status_code))
 
     hooks.add_hook(f"/ext/{endpoint}.html", check)
-    async with fuzz_proc(fuzz_args):
+    async with fuzz_proc(fuzz_args) as proc:
         ...
 
+    assert proc.returncode == 0, f"Fuzzer return non-zero exit code {proc.returncode}\nCommand: `{fuzz_args.command}`"
     assert hit_routes == set(
         [(f"/ext/{endpoint}.html", 200)]
     ), f"Fuzzing failed: did not find /ext/{endpoint}.html.\nCommand: `{fuzz_args.command}`"
@@ -118,9 +147,10 @@ async def test_get_single_extension(settings, fuzz_args, hooks):
             hit_routes.add(req.url.path)
 
     hooks.add_hook(None, check)
-    async with fuzz_proc(fuzz_args):
+    async with fuzz_proc(fuzz_args) as proc:
         ...
 
+    assert proc.returncode == 0, f"Fuzzer return non-zero exit code {proc.returncode}\nCommand: `{fuzz_args.command}`"
     assert hit_routes == expected_routes, (
         f"Fuzzing failed: expected to return HTTP 200 responses for {hit_routes}, instead received "
         f"200 responses for: {hit_routes}.\n"
@@ -142,9 +172,10 @@ async def test_get_multiple_extensions(settings, fuzz_args, hooks):
 
     hooks.add_hook(html_ep, check)
     hooks.add_hook(php_ep, check)
-    async with fuzz_proc(fuzz_args):
+    async with fuzz_proc(fuzz_args) as proc:
         ...
 
+    assert proc.returncode == 0, f"Fuzzer return non-zero exit code {proc.returncode}\nCommand: `{fuzz_args.command}`"
     assert hit_routes == set(
         [html_ep, php_ep]
     ), f"Fuzzing failed: did not find both {html_ep} and {php_ep}.\nCommand: `{fuzz_args.command}`"
@@ -175,9 +206,10 @@ async def test_bruteforce_login(settings, fuzz_args, hooks):
             creds.add(200)
 
     hooks.add_hook("/auth/login", check)
-    async with fuzz_proc(fuzz_args):
+    async with fuzz_proc(fuzz_args) as proc:
         ...
 
+    assert proc.returncode == 0, f"Fuzzer return non-zero exit code {proc.returncode}\nCommand: `{fuzz_args.command}`"
     assert creds == set([200]), (
         "Login brute force failed: did not get a 200 response for the correct username and password.\n"
         f"Command: `{fuzz_args.command}`"
@@ -195,9 +227,10 @@ async def test_fuzz_vhost(settings, fuzz_args, hooks):
 
     hooks.add_hook("/vhost/", check)
 
-    async with fuzz_proc(fuzz_args):
+    async with fuzz_proc(fuzz_args) as proc:
         ...
 
+    assert proc.returncode == 0, f"Fuzzer return non-zero exit code {proc.returncode}\nCommand: `{fuzz_args.command}`"
     assert vhosts == set([true_vhost]), (
         f"Virtual host enumeration failed: expected to find vhost {true_vhost}, found: {vhosts}.\n"
         f"Command: `{fuzz_args.command}`"

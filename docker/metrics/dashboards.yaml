@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: "xfuzz testing metrics"
+    disableDeletion: true
+    allowUiUpdates: true
+    type: "file"
+
+    options:
+      path: /opt/dashboards
+      foldersFromFilesStructure: true
