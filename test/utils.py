@@ -41,3 +41,10 @@ def xfuzztest(args):
         return f
 
     return decorator
+
+
+def extratests(func):
+    """Decorator for extra tests that should only be enabled if the --extra-tests flag
+    is passed in."""
+    func = pytest.mark.skipif("not config.getoption('extratests')")(func)
+    return func

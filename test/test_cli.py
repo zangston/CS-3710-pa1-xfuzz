@@ -3,7 +3,7 @@
 import asyncio
 import xfuzz._typing as _t
 import subprocess as sp
-from .utils import xfuzztest
+from .utils import extratests, xfuzztest
 from contextlib import asynccontextmanager
 from test import LIVE_HOST, LIVE_PORT
 from test.wordlists import path_common, path_subdomains
@@ -61,6 +61,7 @@ async def test_no_specify_url(fuzz_args):
 
 
 @xfuzztest(base_opts + ["-u", f"{host}/enum/FUZZ", "-H", "Content-Type: FUZZ"])
+@extratests
 async def test_specify_fuzz_multiple_times(fuzz_args):
     """We should get an error when FUZZ is provided multiple times."""
 

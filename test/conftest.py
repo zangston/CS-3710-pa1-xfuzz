@@ -24,6 +24,14 @@ def pytest_addoption(parser):
     )
 
     parser.addoption(
+        "--extra-tests",
+        action="store_true",
+        default=False,
+        dest="extratests",
+        help="Run additional tests for debugging purposes.",
+    )
+
+    parser.addoption(
         "--test-loglevel",
         default="error",
         dest="test_loglevel",
