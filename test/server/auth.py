@@ -53,7 +53,7 @@ def auth_router_factory(settings: Settings) -> APIRouter:
 
         ```
         python3 -m xfuzz -w {wordlist} -H 'Content-Type: application/json' \\
-            -X PUT -mc 409 -d '{{"username": "admin", "password": "FUZZ"}}' \\
+            -X PUT -mc 409 -d '{{"username": "FUZZ", "password": "password"}}' \\
             -u $HOST:$PORT{prefix}/create
         ```
 
