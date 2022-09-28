@@ -60,6 +60,20 @@ async def test_no_specify_url(fuzz_args):
     )
 
 
+@xfuzztest(base_opts + ["-u", f"{host}/enum/FUZZ", "-H", "Content-Type: FUZZ"])
+async def test_specify_fuzz_multiple_times(fuzz_args):
+    """We should get an error when FUZZ is provided multiple times."""
+
+    async with fuzz_proc(fuzz_args) as proc:
+        ...
+
+    assert proc.returncode != 0, (
+        "xfuzz returned exit code 0 even though FUZZ was specified multiple times. Make sure that xfuzz "
+        "returns a non-zero exit code (e.g. by raising an exception) when FUZZ is specified for "
+        f"multiple parameters.\nCommand: `{fuzz_args.command}`"
+    )
+
+
 @xfuzztest(base_opts + ["-u", f"{host}/enum/FUZZ", "-mc", "200", "-mc", "307"])
 async def test_directory_enumeration(fuzz_args, hooks):
     """Perform directory enumeration using xfuzz."""
