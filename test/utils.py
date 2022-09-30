@@ -1,7 +1,7 @@
 import asyncio
+import platform
 import pytest
 import shlex
-import shutil
 import subprocess as sp
 import typing as _t
 from contextlib import asynccontextmanager
@@ -20,7 +20,11 @@ class FuzzArgs:
         """Return a list of string arguments for ``subprocess.Popen`` so that these arguments
         can be used to run ``xfuzz`` in another process."""
 
-        python = shutil.which("python")
+        if platform.system().lower() == "windows":
+            python = "py"
+        else:
+            python = "python"
+
         return [python, "-m", "xfuzz"] + self.args
 
     @property
