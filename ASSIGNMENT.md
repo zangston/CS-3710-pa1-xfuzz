@@ -102,7 +102,7 @@ hello
 And the command
 
 ```
-python3 -m xfuzz -u http://example.org/FUZZ -e html -e php
+python3 -m xfuzz -w /path/to/wordlist -u http://example.org/FUZZ -e html -e php
 ```
 
 is run, then the following URLs should be requested:
