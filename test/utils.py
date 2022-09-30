@@ -21,7 +21,7 @@ class FuzzArgs:
         can be used to run ``xfuzz`` in another process."""
 
         if platform.system().lower() == "windows":
-            python = "py3"
+            python = "py"
         else:
             python = "python3"
 
