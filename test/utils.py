@@ -21,9 +21,9 @@ class FuzzArgs:
         can be used to run ``xfuzz`` in another process."""
 
         if platform.system().lower() == "windows":
-            python = "py"
+            python = "py3"
         else:
-            python = "python"
+            python = "python3"
 
         return [python, "-m", "xfuzz"] + self.args
 

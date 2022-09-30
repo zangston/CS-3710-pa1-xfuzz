@@ -5,6 +5,7 @@
 
 import pytest
 from .utils import clitest, fuzz_proc
+from test.wordlists import path_common
 
 
 def defaultstest(func):
@@ -15,13 +16,24 @@ def defaultstest(func):
 
 
 @defaultstest
-@clitest(["-u", "https://example.org", "-w", "-"])
-async def test_no_specify_fuzz_parameter(fuzz_args):
+@clitest(["-u", "https://example.org"])
+async def test_no_specify_wordlist(fuzz_args):
     async with fuzz_proc(fuzz_args) as proc:
         ...
 
     assert proc.returncode != 0, (
-        "xfuzz return exit code 0 even though no parameter was specified for fuzzing. Make sure that "
-        "xfuzz returns a non-zero exit code (e.g. by raising an exception) when FUZZ is not provided.\n"
+        "xfuzz return exit code 0 even though no wordlist was specified for fuzzing.\n"
+        f"Command: `{fuzz_args.command}`"
+    )
+
+
+@defaultstest
+@clitest(["-w", str(path_common())])
+async def test_no_specify_url(fuzz_args):
+    async with fuzz_proc(fuzz_args) as proc:
+        ...
+
+    assert proc.returncode != 0, (
+        "xfuzz return exit code 0 even though no URL was specified for fuzzing.\n"
         f"Command: `{fuzz_args.command}`"
     )
