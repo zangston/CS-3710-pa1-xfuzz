@@ -28,7 +28,7 @@ async def main(args) -> None:
     total_time = (end - start).total_seconds()
     avg_time = total_time / args.nrequests
 
-    print(f"[blue]Total time to perform %d requests: [bold red]{total_time:10.5f}")
+    print(f"[blue]Total time to perform requests:    [bold red]{total_time:10.5f}")
     print(f"[blue]Average time per request:          [bold red]{avg_time:10.5f}")
 
 
