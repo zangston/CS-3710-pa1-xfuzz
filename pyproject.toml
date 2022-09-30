@@ -21,4 +21,6 @@ warn_unreachable = true
 [tool.pytest.ini_options]
 addopts = "-rA"
 asyncio_mode = "auto"
-testpaths = ["test"]
+
+# By default, only run the CLI tests
+testpaths = ["test/test_cli.py"]

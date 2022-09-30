@@ -2,36 +2,12 @@
 
 import asyncio
 import xfuzz._typing as _t
-import subprocess as sp
-from .utils import extratests, xfuzztest
-from contextlib import asynccontextmanager
+from .utils import xfuzztest, fuzz_proc
 from test import LIVE_HOST, LIVE_PORT
 from test.wordlists import path_common, path_subdomains
 
-
 host: _t.Final[str] = f"http://{LIVE_HOST}:{LIVE_PORT}"
 base_opts: _t.Final[_t.List[str]] = ["-w", str(path_common())]
-
-
-@asynccontextmanager
-async def fuzz_proc(fuzz_args, timeout: float = 60):
-    """Run ``xfuzz`` in another process and wrap it in an async context. Wait for the process
-    to terminate at the end of the context."""
-
-    proc = sp.Popen(fuzz_args.popen_args, stdin=sp.PIPE)
-    loop = asyncio.get_event_loop()
-
-    try:
-        yield proc
-    finally:
-        wait = lambda: proc.wait(timeout=timeout)
-        try:
-            await loop.run_in_executor(None, wait)
-        except sp.TimeoutExpired as ex:
-            assert False, (
-                f"{type(ex).__name__} exception raised after waiting for fuzzer process to terminate.\n"
-                f"Command: `{fuzz_args.command}`"
-            )
 
 
 @xfuzztest(["-u", f"{host}"])
@@ -57,21 +33,6 @@ async def test_no_specify_url(fuzz_args):
         "xfuzz returned exit code 0 even though no URL was provided. Make sure that xfuzz returns "
         "a non-zero exit code (e.g. by raising an exception) when the -u / --url flag is not provided.\n"
         f"Command: `{fuzz_args.command}`"
-    )
-
-
-@xfuzztest(base_opts + ["-u", f"{host}/enum/FUZZ", "-H", "Content-Type: FUZZ"])
-@extratests
-async def test_specify_fuzz_multiple_times(fuzz_args):
-    """We should get an error when FUZZ is provided multiple times."""
-
-    async with fuzz_proc(fuzz_args) as proc:
-        ...
-
-    assert proc.returncode != 0, (
-        "xfuzz returned exit code 0 even though FUZZ was specified multiple times. Make sure that xfuzz "
-        "returns a non-zero exit code (e.g. by raising an exception) when FUZZ is specified for "
-        f"multiple parameters.\nCommand: `{fuzz_args.command}`"
     )
 
 

@@ -16,19 +16,11 @@ def pytest_addoption(parser):
     """Add additional command-line options for PyTest."""
 
     parser.addoption(
-        "--server-tests",
+        "--skip-cli-tests",
         action="store_true",
         default=False,
-        dest="servertests",
-        help="Only run tests for the test harness server.",
-    )
-
-    parser.addoption(
-        "--extra-tests",
-        action="store_true",
-        default=False,
-        dest="extratests",
-        help="Run additional tests for debugging purposes.",
+        dest="skip_cli_tests",
+        help="Skip tests for the command line interface.",
     )
 
     parser.addoption(
