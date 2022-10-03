@@ -62,9 +62,11 @@ async def fuzz(args):
         for word in wordlist:
             url = args.url.replace('FUZZ', word)
             urls.append(url)
-            for e in args.extensions:
-                url += e
-                urls.append(url)
+            if args.extensions:
+                for e in args.extensions:
+                    if e not in url:
+                        urle = url + e
+                    urls.append(urle)
 
         async with aiohttp.ClientSession() as sess:
             for u in urls:
