@@ -1,6 +1,7 @@
 import aiohttp
 import asyncio
 
+
 async def fuzz(args):
     """Fuzz a target URL with the command-line arguments specified by ``args``."""
 
@@ -56,8 +57,20 @@ async def fuzz(args):
     '''
     The fuzzing part
     '''
-    tasks =[]
+    tasks = []
     urls = []
+
+    data = ''
+    if args.data:
+        data = args.data.replace("{", '"')
+        data = data.replace("}", '"')
+        data = data.replace(":", "=")
+        data = data.replace(",", "&")
+    # print(data)
+
+    """
+    This code block handles all features relating to URL fuzzing
+    """
     if fuzzparam == 'url':
         for word in wordlist:
             url = args.url.replace('FUZZ', word)
@@ -70,7 +83,7 @@ async def fuzz(args):
 
         async with aiohttp.ClientSession() as sess:
             for u in urls:
-                task = asyncio.create_task(sess.request(args.method, u))
+                task = asyncio.create_task(sess.request(args.method, u, data=data))
                 tasks.append(task)
             responses = await asyncio.gather(*tasks)
 
@@ -79,4 +92,3 @@ async def fuzz(args):
             if r.status in args.match_codes:
                 print(str(r.url) + " - " + str(r.status))
         print('Processed ' + str(len(responses)) + ' items')
-
