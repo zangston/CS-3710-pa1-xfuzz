@@ -9,7 +9,48 @@ async def fuzz(args):
     # ex: print the arguments that were passed in to this function
     print(f"args = {args}")
 
+    '''
     # ex: make an HTTP request to the input URL
     async with aiohttp.ClientSession() as session:
         async with session.get(args.url) as resp:
             print(f"{args.url} - Status {resp.status}")
+    '''
+
+    # Read in wordlist from args in an array
+    wordlist = []
+    with open(args.wordlist) as file:
+        for line in file:
+            wordlist.append(line)
+
+    '''
+    # Print wordlist array
+    for word in wordlist:
+        print(word)
+    '''
+
+    '''
+    This is to handle the parameter that's being fuzzed
+    xfuzz should return an error if no parameter is supplied, or if too many parameters are supplied
+    '''
+    fuzzcount = 0;
+    fuzzparam = ''
+
+    if 'FUZZ' in args.url:
+        fuzzcount += 1
+        fuzzparam = 'url'
+    if 'FUZZ' in args.headers:
+        fuzzcount += 1
+        fuzzparam = 'headers'
+    if args.data is not None:
+        if 'FUZZ' in args.data:
+            fuzzcount += 1
+            fuzzparam = 'data'
+    if fuzzcount == 0:
+        print("Error - no parameter supplied. You haven't told us what to fuzz!.")
+        return
+    else:
+        if fuzzcount > 1:
+            print("Error - too many parameters supplied. Only one parameter can be fuzzed at a time")
+            return
+
+    
