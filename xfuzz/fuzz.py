@@ -1,3 +1,5 @@
+import sys
+
 import aiohttp
 import asyncio
 
@@ -17,11 +19,22 @@ async def fuzz(args):
             print(f"{args.url} - Status {resp.status}")
     '''
 
-    # Read in wordlist from args in an array
+    """
+    Read in wordlist, depending on parameters supplied
+    if "-" is supplied, read wordlist from sys.stdin,
+    else read wordlist from file passed in.
+    if no wordlist is supplied, then terminal should give an error
+    """
     wordlist = []
-    with open(args.wordlist) as file:
-        for line in file:
+    if args.wordlist == "-":
+        for line in sys.stdin:
+            if 'q' == line.rstrip():
+                break
             wordlist.append(line)
+    else:
+        with open(args.wordlist) as file:
+            for line in file:
+                wordlist.append(line)
 
     '''
     # Print wordlist array
@@ -92,3 +105,25 @@ async def fuzz(args):
             if r.status in args.match_codes:
                 print(str(r.url) + " - " + str(r.status))
         print('Processed ' + str(len(responses)) + ' items')
+
+    """
+    This code block handles data fuzzing, brute force login
+    """
+    """
+    if fuzzparam == 'data':
+        dataf = []
+        for word in wordlist:
+            dataf.append(data.replace('FUZZ', word))
+
+        async with aiohttp.ClientSession() as sess:
+            for d in dataf:
+                task = asyncio.create_task(sess.request(args.method, args.url, data=d))
+                tasks.append(task)
+            responses = await asyncio.gather(*tasks)
+
+        print('Data combination - Status code')
+        for r in responses:
+            #if r.status in args.match_codes:
+            print(r)
+        print('Processed ' + str(len(responses)) + ' items')
+    """
