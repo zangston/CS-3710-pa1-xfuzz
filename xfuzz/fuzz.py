@@ -81,7 +81,9 @@ async def fuzz(args):
     """
     data = ''
     if args.data:
-        data = args.data.replace("{", '"')
+        data = args.data.replace(' ', '')
+        data = data.replace('"', '')
+        data = data.replace("{", '"')
         data = data.replace("}", '"')
         data = data.replace(":", "=")
         data = data.replace(",", "&")
