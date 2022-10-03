@@ -83,8 +83,8 @@ async def fuzz(args):
     if args.data:
         data = args.data.replace(' ', '')
         data = data.replace('"', '')
-        data = data.replace("{", '"')
-        data = data.replace("}", '"')
+        data = data.replace("{", '')
+        data = data.replace("}", '')
         data = data.replace(":", "=")
         data = data.replace(",", "&")
     print("Data: " + data)
@@ -135,10 +135,10 @@ async def fuzz(args):
     This code block handles data fuzzing, brute force login
     """
     if fuzzparam == 'data':
-        """
         dataf = []
         for word in wordlist:
             d = data.replace('FUZZ', word)
+            d = d.rstrip('\n')
             # print(d)
             dataf.append(d)
 
@@ -147,7 +147,6 @@ async def fuzz(args):
                 task = asyncio.create_task(sess.request(args.method, args.url, data=d, headers=headers))
                 tasks.append(task)
             responses = await asyncio.gather(*tasks)
-        """
 
         """
         # URL approach
@@ -160,16 +159,16 @@ async def fuzz(args):
 
         async with aiohttp.ClientSession() as sess:
             for u in urls:
-                print(u)
+                # print(u)
                 task = asyncio.create_task(sess.request(args.method, u))
                 tasks.append(task)
             responses = await asyncio.gather(*tasks)
         """
 
-        print('Data combination - Status code')
+        # print('Data combination - Status code')
         for r in responses:
-            #if r.status in args.match_codes:
-                #print(data + " - " + str(r.status))
+            if r.status in args.match_codes:
+                # print(data + " - " + str(r.status))
                 print(r)
         print('Processed ' + str(len(responses)) + ' items')
 
@@ -178,5 +177,25 @@ async def fuzz(args):
     """
     if fuzzparam == 'headers':
         headerslist = []
-        fuzzedheader = ''
-        # for word in wordlist:
+        fuzzedheader = 0
+        headerf = headers
+        for i in range(len(keys)):
+            if headers[keys[i]] == 'FUZZ':
+                fuzzedheader == i
+        for word in wordlist:
+            headerf[keys[fuzzedheader]] = word.rstrip('\n')
+            headerslist.append(headerf)
+            # print(headerf)
+
+        async with aiohttp.ClientSession() as sess:
+            for h in headerslist:
+                task = asyncio.create_task(sess.request(args.method, args.url, data=data, headers=h))
+                tasks.append(task)
+            responses = await asyncio.gather(*tasks)
+
+        # print('Header - Status code')
+        for r in responses:
+            if r.status in args.match_codes:
+                # print(data + " - " + str(r.status))
+                print(r)
+        print('Processed ' + str(len(responses)) + ' items')
