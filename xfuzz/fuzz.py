@@ -1,5 +1,5 @@
 import aiohttp
-
+import asyncio
 
 async def fuzz(args):
     """Fuzz a target URL with the command-line arguments specified by ``args``."""
@@ -53,4 +53,24 @@ async def fuzz(args):
             print("Error - too many parameters supplied. Only one parameter can be fuzzed at a time")
             return
 
-    
+    '''
+    The fuzzing part
+    '''
+    tasks =[]
+    urls = []
+    if fuzzparam == 'url':
+        for word in wordlist:
+            url = args.url.replace('FUZZ', word)
+            urls.append(url)
+
+        async with aiohttp.ClientSession() as sess:
+            for u in urls:
+                task = asyncio.create_task(sess.request("GET", u))
+                tasks.append(task)
+            responses = await asyncio.gather(*tasks)
+
+        print('Fuzzed value - Status code')
+        for r in responses:
+            if r.status in args.match_codes:
+                print(str(r.url) + " - " + str(r.status))
+        print('Processed ' + str(len(responses)) + ' items')
