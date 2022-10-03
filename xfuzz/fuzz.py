@@ -141,7 +141,7 @@ async def fuzz(args):
         for word in wordlist:
             d = args.data.replace('FUZZ', word)
             d = d.replace('\n', '')
-            print(d)
+            # print(d)
             dataf.append(d)
 
         async with aiohttp.ClientSession() as sess:
@@ -167,11 +167,12 @@ async def fuzz(args):
             responses = await asyncio.gather(*tasks)
         """
 
-        # print('Data combination - Status code')
-        for r in responses:
-            if r.status in args.match_codes:
+        print('Data combination - Status code')
+        for i in range(len(responses)):
+            if responses[i].status in args.match_codes:
                 # print(data + " - " + str(r.status))
-                print(r)
+                # print(responses[i])
+                print(dataf[i] + " - " + str(responses[i].status))
         print('Processed ' + str(len(responses)) + ' items')
 
     """
