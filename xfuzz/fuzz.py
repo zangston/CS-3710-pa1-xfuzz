@@ -73,18 +73,39 @@ async def fuzz(args):
     tasks = []
     urls = []
 
+    """
+    This block handles converting data parameters into a string to be 
+    passed into session request
+    """
     data = ''
     if args.data:
         data = args.data.replace("{", '"')
         data = data.replace("}", '"')
         data = data.replace(":", "=")
         data = data.replace(",", "&")
-    # print(data)
+    print("data: " + data)
+
+    """
+    This block handles converting passed in header parameters into a dictionary
+    """
+    headers = {}
+    keys = []
+    values = []
+    for h in args.headers:
+        x = h.split()
+        keys.append(x[0])
+        values.append(x[1])
+    # print('keys: ' + str(keys))
+    # print('values: ' + str(values))
+    for i in range(len(keys)):
+        headers[keys[i]] = values[i]
+    print('headers: ' + str(headers))
 
     """
     This code block handles all features relating to URL fuzzing
     """
     if fuzzparam == 'url':
+        # print(fuzzparam)
         for word in wordlist:
             url = args.url.replace('FUZZ', word)
             urls.append(url)
@@ -96,7 +117,7 @@ async def fuzz(args):
 
         async with aiohttp.ClientSession() as sess:
             for u in urls:
-                task = asyncio.create_task(sess.request(args.method, u, data=data))
+                task = asyncio.create_task(sess.request(args.method, u, data=data, headers=headers))
                 tasks.append(task)
             responses = await asyncio.gather(*tasks)
 
@@ -105,15 +126,19 @@ async def fuzz(args):
             if r.status in args.match_codes:
                 print(str(r.url) + " - " + str(r.status))
         print('Processed ' + str(len(responses)) + ' items')
+        return
 
     """
     This code block handles data fuzzing, brute force login
     """
     """
     if fuzzparam == 'data':
+        # print(fuzzparam)
         dataf = []
         for word in wordlist:
-            dataf.append(data.replace('FUZZ', word))
+            d = data.replace('FUZZ', word)
+            print(d)
+            dataf.append(d)
 
         async with aiohttp.ClientSession() as sess:
             for d in dataf:
@@ -123,7 +148,9 @@ async def fuzz(args):
 
         print('Data combination - Status code')
         for r in responses:
-            #if r.status in args.match_codes:
-            print(r)
+            if r.status in args.match_codes:
+                # print(data + " - " + str(r.status))
+                print(r)
         print('Processed ' + str(len(responses)) + ' items')
     """
+
