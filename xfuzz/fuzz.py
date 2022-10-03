@@ -70,7 +70,7 @@ async def fuzz(args):
 
         async with aiohttp.ClientSession() as sess:
             for u in urls:
-                task = asyncio.create_task(sess.request("GET", u))
+                task = asyncio.create_task(sess.request(args.method, u))
                 tasks.append(task)
             responses = await asyncio.gather(*tasks)
 
@@ -79,3 +79,4 @@ async def fuzz(args):
             if r.status in args.match_codes:
                 print(str(r.url) + " - " + str(r.status))
         print('Processed ' + str(len(responses)) + ' items')
+
