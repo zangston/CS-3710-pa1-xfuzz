@@ -52,9 +52,11 @@ async def fuzz(args):
     if 'FUZZ' in args.url:
         fuzzcount += 1
         fuzzparam = 'url'
-    if 'FUZZ' in args.headers:
-        fuzzcount += 1
-        fuzzparam = 'headers'
+    if args.headers:
+        for h in args.headers:
+            if 'FUZZ' in h:
+                fuzzcount += 1
+                fuzzparam = 'headers'
     if args.data is not None:
         if 'FUZZ' in args.data:
             fuzzcount += 1
@@ -66,7 +68,7 @@ async def fuzz(args):
         if fuzzcount > 1:
             print("Error - too many parameters supplied. Only one parameter can be fuzzed at a time")
             return
-
+    print('Fuzzed Parameter: ' + fuzzparam)
     '''
     The fuzzing part
     '''
@@ -83,7 +85,7 @@ async def fuzz(args):
         data = data.replace("}", '"')
         data = data.replace(":", "=")
         data = data.replace(",", "&")
-    print("data: " + data)
+    print("Data: " + data)
 
     """
     This block handles converting passed in header parameters into a dictionary
@@ -99,13 +101,12 @@ async def fuzz(args):
     # print('values: ' + str(values))
     for i in range(len(keys)):
         headers[keys[i]] = values[i]
-    print('headers: ' + str(headers))
+    print('Headers: ' + str(headers))
 
     """
     This code block handles all features relating to URL fuzzing
     """
     if fuzzparam == 'url':
-        # print(fuzzparam)
         for word in wordlist:
             url = args.url.replace('FUZZ', word)
             urls.append(url)
@@ -133,7 +134,6 @@ async def fuzz(args):
     """
     """
     if fuzzparam == 'data':
-        # print(fuzzparam)
         dataf = []
         for word in wordlist:
             d = data.replace('FUZZ', word)
@@ -154,3 +154,8 @@ async def fuzz(args):
         print('Processed ' + str(len(responses)) + ' items')
     """
 
+    if fuzzparam == 'headers':
+        headerslist = []
+        fuzzedheader = ''
+        for i in range(len(headers)):
+            print('i')
