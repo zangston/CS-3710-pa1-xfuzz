@@ -10,7 +10,7 @@ async def fuzz(args):
     # TODO: your code here!
 
     # ex: print the arguments that were passed in to this function
-    print(f"args = {args}")
+    # print(f"args = {args}")
 
     '''
     # ex: make an HTTP request to the input URL
@@ -68,7 +68,7 @@ async def fuzz(args):
         if fuzzcount > 1:
             print("Error - too many parameters supplied. Only one parameter can be fuzzed at a time")
             return
-    print('Fuzzed Parameter: ' + fuzzparam)
+    # print('Fuzzed Parameter: ' + fuzzparam)
     '''
     The fuzzing part
     '''
@@ -89,7 +89,7 @@ async def fuzz(args):
     # print('values: ' + str(values))
     for i in range(len(keys)):
         headers[keys[i]] = values[i]
-    print('Headers: ' + str(headers))
+    # print('Headers: ' + str(headers))
 
     """
     This code block handles all features relating to URL fuzzing
@@ -114,7 +114,7 @@ async def fuzz(args):
         for r in responses:
             if r.status in args.match_codes:
                 print(str(r.url) + " - " + str(r.status))
-        print('Processed ' + str(len(responses)) + ' items')
+        print('\n' + 'Processed ' + str(len(responses)) + ' items')
         return
 
     """
@@ -140,7 +140,7 @@ async def fuzz(args):
                 # print(data + " - " + str(r.status))
                 # print(responses[i])
                 print(dataf[i] + " - " + str(responses[i].status))
-        print('Processed ' + str(len(responses)) + ' items')
+        print('\n' + 'Processed ' + str(len(responses)) + ' items')
 
     """
     This block handles fuzzing for header parameters
@@ -170,4 +170,4 @@ async def fuzz(args):
                 # print(data + " - " + str(r.status))
                 # print(responses[i])
                 print(str(headerslist[i]) + " - " + str(responses[i].status))
-        print('Processed ' + str(len(responses)) + ' items')
+        print('\n' + 'Processed ' + str(len(responses)) + ' items')
