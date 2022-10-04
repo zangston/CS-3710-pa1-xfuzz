@@ -183,10 +183,11 @@ async def fuzz(args):
         fuzzedheader = 0
         headerf = headers
         for i in range(len(keys)):
-            if headers[keys[i]] == 'FUZZ':
-                fuzzedheader == i
+            if 'FUZZ' in headers[keys[i]]:
+                fuzzedheader = i
         for word in wordlist:
-            headerf[keys[fuzzedheader]] = word.rstrip('\n')
+            x = values[fuzzedheader].replace('FUZZ', word)
+            headerf[keys[fuzzedheader]] = x.replace('\n', '')
             headerslist.append(headerf)
             # print(headerf)
 
@@ -196,9 +197,10 @@ async def fuzz(args):
                 tasks.append(task)
             responses = await asyncio.gather(*tasks)
 
-        # print('Header - Status code')
-        for r in responses:
-            if r.status in args.match_codes:
+        print('Header - Status code')
+        for i in range(len(responses)):
+            if responses[i].status in args.match_codes:
                 # print(data + " - " + str(r.status))
-                print(r)
+                # print(responses[i])
+                print(str(headerslist[i]) + " - " + str(responses[i].status))
         print('Processed ' + str(len(responses)) + ' items')
