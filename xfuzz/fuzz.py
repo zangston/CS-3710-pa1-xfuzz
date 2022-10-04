@@ -76,22 +76,6 @@ async def fuzz(args):
     urls = []
 
     """
-    This block handles converting data parameters into a string to be 
-    passed into session request
-    """
-    """
-    data = ''
-    if args.data:
-        data = args.data.replace(' ', '')
-        data = data.replace('"', '')
-        data = data.replace("{", '')
-        data = data.replace("}", '')
-        data = data.replace(":", "=")
-        data = data.replace(",", "&")
-    print("Data: " + data)
-    """
-
-    """
     This block handles converting passed in header parameters into a dictionary
     """
     headers = {}
@@ -149,23 +133,6 @@ async def fuzz(args):
                 task = asyncio.create_task(sess.request(args.method, args.url, data=d, headers=headers))
                 tasks.append(task)
             responses = await asyncio.gather(*tasks)
-
-        """
-        # URL approach
-        for word in wordlist:
-            u = args.url + '?'
-            d = data.replace('"', '')
-            d = d.replace('FUZZ', word)
-            u += d
-            urls.append(u)
-
-        async with aiohttp.ClientSession() as sess:
-            for u in urls:
-                # print(u)
-                task = asyncio.create_task(sess.request(args.method, u))
-                tasks.append(task)
-            responses = await asyncio.gather(*tasks)
-        """
 
         print('Data combination - Status code')
         for i in range(len(responses)):
