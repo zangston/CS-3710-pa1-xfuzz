@@ -1,5 +1,13 @@
 # xfuzz
 
+---
+This repository is a programming assignment I did for CS 3710 (Cybersecurity) taught by Will Shand in Fall 2022. It's a web fuzzer that will take in a wordlist and try various combinations of words inserted into a URL to try and find working URLs in an attempt to perform reconnaissance on a website.
+
+Please please please don't use my code to fuzz any actual websites <3 I tested my code on a localhost website and did not target any actual sites and I hope no one uses my code to perform an actual attack.
+
+I made this repository public on 14. February 2023 because Will isn't teaching CS 3710 anymore so I figure I'm not committing an honor violation by making this repo public. If you're a 3710 professor and want me to make this repo private again, please email me at wyz5rge@virginia.edu
+---
+
 - [Introduction](#introduction)
 - [Repository layout](#repository-layout)
 - [Testing](#testing)
